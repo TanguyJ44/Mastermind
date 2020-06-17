@@ -1,7 +1,9 @@
 from tkinter import * 
+from tkinter import messagebox
 from PIL import Image, ImageTk
 from random import *
 import os
+import sys
     
 findCode = ""
     
@@ -113,7 +115,7 @@ def setPawn(color):
         lineTab[position-1] = Pawn(line, position, color, 0)
         position+=1
         
-        
+
 def checkLine():
     global position
     
@@ -146,6 +148,12 @@ def checkLine():
         if result == "2222":
             print("Win line ", line)
             setResultFindColor()
+            
+            answer = messagebox.askyesno("Question","Vous remportez la partie !\nSouhaitez-vous recommencer une nouvelle partie ?")
+            if answer == True:
+                print("Restart game")
+            else:
+                sys.exit()
         else :
             if(line != 10):
                 moveUpSelector()
@@ -153,6 +161,12 @@ def checkLine():
             else:
                 print("Game Over !")
                 setResultFindColor()
+                
+                answer = messagebox.askyesno("Question","Game Over !\nSouhaitez-vous recommencer une nouvelle partie ?")
+                if answer == True:
+                    print("Restart game")
+                else:
+                    sys.exit()
         
         
 def setLinePegs(pegsCode):
@@ -255,6 +269,7 @@ btnRed = canvas.create_window(391, 353, window=btnRed)
 btnYellow = Button(frame, background='white', image=colorYellowImg, border=0, cursor="hand2", command= lambda x=6:setPawn(x))
 btnYellow = canvas.create_window(391, 415, window=btnYellow)
 
+print(os.path.abspath(__file__))
 
 canvas.pack()
 
