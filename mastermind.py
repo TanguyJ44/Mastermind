@@ -21,11 +21,19 @@ line7 = [0, 0, 0, 0]
 line8 = [0, 0, 0, 0]
 line9 = [0, 0, 0, 0]
 line10 = [0, 0, 0, 0]
+lineResult = [0, 0, 0, 0]
+
+pegsSave = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 lineTab = line1
 
-for i in range(4):
-    findCode += str(randint(1, 4))
+def randomFindCode():
+    global findCode
+    findCode = ""
+    for i in range(4):
+        findCode += str(randint(1, 4))
+        
+randomFindCode()
 
 
 class Pawn:
@@ -57,12 +65,36 @@ class Pawn:
     def getColor(self):
         return self.color
     
+class ResultPawn:
+        
+    def __init__(self, posX, posY, color, label):
+        self.posX = posX
+        self.posY = posY
+        self.color = color
+        self.label = label
+        
+        if color == 1: self.label = Label(frame, image=colorBlueImg, border=0)
+        elif color == 2: self.label = Label(frame, image=colorGreenImg, border=0)
+        elif color == 3: self.label = Label(frame, image=colorOrangeImg, border=0)
+        elif color == 4: self.label = Label(frame, image=colorPinkImg, border=0)
+        elif color == 5: self.label = Label(frame, image=colorRedImg, border=0)
+        elif color == 6: self.label = Label(frame, image=colorYellowImg, border=0)
+        
+        self.label.place(x=self.posX, y=self.posY)
+        
+    def destroy(self):
+        self.label.destroy()
+    
+    
 class Pegs:
     
-    def __init__(self, line, pegsCode, label):
+    def __init__(self, line, pegsCode, label1, label2, label3, label4):
         self.line = line
         self.pegsCode = pegsCode
-        self.label = label
+        self.label1 = label1
+        self.label2 = label2
+        self.label3 = label3
+        self.label4 = label4
         
         if line > 5:
             marging = 62
@@ -70,32 +102,39 @@ class Pegs:
             marging = 61
         
         if pegsCode[0] == "1":
-            self.label = Label(frame, image=colorPegsBlack, border=0)
-            self.label.place(x=320, y=650 - (marging * (line-1) ))
+            self.label1 = Label(frame, image=colorPegsBlack, border=0)
+            self.label1.place(x=320, y=650 - (marging * (line-1) ))
         elif pegsCode[0] == "2":
-            self.label = Label(frame, image=colorPegsGreen, border=0)
-            self.label.place(x=320, y=650 - (marging * (line-1) ))
+            self.label1 = Label(frame, image=colorPegsGreen, border=0)
+            self.label1.place(x=320, y=650 - (marging * (line-1) ))
             
         if pegsCode[1] == "1":
-            self.label = Label(frame, image=colorPegsBlack, border=0)
-            self.label.place(x=335, y=650 - (marging * (line-1) ))
+            self.label2 = Label(frame, image=colorPegsBlack, border=0)
+            self.label2.place(x=335, y=650 - (marging * (line-1) ))
         elif pegsCode[1] == "2":
-            self.label = Label(frame, image=colorPegsGreen, border=0)
-            self.label.place(x=335, y=650 - (marging * (line-1) ))
+            self.label2 = Label(frame, image=colorPegsGreen, border=0)
+            self.label2.place(x=335, y=650 - (marging * (line-1) ))
             
         if pegsCode[2] == "1":
-            self.label = Label(frame, image=colorPegsBlack, border=0)
-            self.label.place(x=335, y=665 - (marging * (line-1) ))
+            self.label3 = Label(frame, image=colorPegsBlack, border=0)
+            self.label3.place(x=335, y=665 - (marging * (line-1) ))
         elif pegsCode[2] == "2":
-            self.label = Label(frame, image=colorPegsGreen, border=0)
-            self.label.place(x=335, y=665 - (marging * (line-1) ))
+            self.label3 = Label(frame, image=colorPegsGreen, border=0)
+            self.label3.place(x=335, y=665 - (marging * (line-1) ))
             
         if pegsCode[3] == "1":
-            self.label = Label(frame, image=colorPegsBlack, border=0)
-            self.label.place(x=320, y=665 - (marging * (line-1) ))
+            self.label4 = Label(frame, image=colorPegsBlack, border=0)
+            self.label4.place(x=320, y=665 - (marging * (line-1) ))
         elif pegsCode[3] == "2":
-            self.label = Label(frame, image=colorPegsGreen, border=0)
-            self.label.place(x=320, y=665 - (marging * (line-1) ))
+            self.label4 = Label(frame, image=colorPegsGreen, border=0)
+            self.label4.place(x=320, y=665 - (marging * (line-1) ))
+            
+            
+    def pegsDestroy(self):
+        if self.label1 != 0: self.label1.destroy()
+        if self.label2 != 0: self.label2.destroy()
+        if self.label3 != 0: self.label3.destroy()
+        if self.label4 != 0: self.label4.destroy()
     
 
 def moveUpSelector():
@@ -146,12 +185,11 @@ def checkLine():
         setLinePegs(result)
         
         if result == "2222":
-            print("Win line ", line)
-            setResultFindColor()
+            setResultFindColor(0)
             
             answer = messagebox.askyesno("Question","Vous remportez la partie !\nSouhaitez-vous recommencer une nouvelle partie ?")
             if answer == True:
-                print("Restart game")
+                restartGame()
             else:
                 sys.exit()
         else :
@@ -159,36 +197,72 @@ def checkLine():
                 moveUpSelector()
                 switchTabs()
             else:
-                print("Game Over !")
-                setResultFindColor()
+                setResultFindColor(0)
                 
                 answer = messagebox.askyesno("Question","Game Over !\nSouhaitez-vous recommencer une nouvelle partie ?")
                 if answer == True:
-                    print("Restart game")
+                    restartGame()
                 else:
                     sys.exit()
         
         
-def setLinePegs(pegsCode):
-    Pegs(line, pegsCode, 0)
-    
-
-def setResultFindColor():
-    nextResultCase = 53
-    count = 0
-    
-    for index in findCode:
-        if index == str(1): labelResult = Label(frame, image=colorBlueImg, border=0)
-        elif index == str(2): labelResult = Label(frame, image=colorGreenImg, border=0)
-        elif index == str(3): labelResult = Label(frame, image=colorOrangeImg, border=0)
-        elif index == str(4): labelResult = Label(frame, image=colorPinkImg, border=0)
-        elif index == str(5): labelResult = Label(frame, image=colorRedImg, border=0)
-        elif index == str(6): labelResult = Label(frame, image=colorYellowImg, border=0)
         
-        labelResult.place(x=205 + (nextResultCase*count), y=724)
-        count +=1
-
+def restartGame():
+    global line 
+    global position
+    global selectorY
+    global lineTab
+    global pegsSave
     
+    randomFindCode()
+    line = 0
+    position = 1
+    selectorY = 655+62
+    
+    for i in range(10):
+        if i == 0: lineTab = line1
+        elif i == 1: lineTab = line1
+        elif i == 2: lineTab = line2
+        elif i == 3: lineTab = line3
+        elif i == 4: lineTab = line4
+        elif i == 5: lineTab = line5
+        elif i == 6: lineTab = line6
+        elif i == 7: lineTab = line7
+        elif i == 8: lineTab = line8
+        elif i == 9: lineTab = line9
+        
+        for i in range(len(lineTab)):
+            if lineTab[i] != 0: lineTab[i].destroy()
+    
+    lineTab = line1
+    
+    for i in range(10):
+        if pegsSave[i] != 0: pegsSave[i].pegsDestroy()
+        
+    for i in range(4):
+        lineResult[i].destroy()
+    
+    setResultFindColor(1)
+    
+    moveUpSelector()
+    
+        
+def setLinePegs(pegsCode):
+    global pegsSave
+    
+    pegsSave[line] = Pegs(line, pegsCode, 0, 0, 0, 0)
+    
+
+def setResultFindColor(action):   
+    if action == 0:
+        count = 0
+        
+        for index in findCode:
+            lineResult[count] = ResultPawn(205 + (53*count), 724, int(index), 0)
+            
+            count +=1
+        
+        
 def clearLine():
     global position
     
@@ -268,8 +342,6 @@ btnRed = canvas.create_window(391, 353, window=btnRed)
 
 btnYellow = Button(frame, background='white', image=colorYellowImg, border=0, cursor="hand2", command= lambda x=6:setPawn(x))
 btnYellow = canvas.create_window(391, 415, window=btnYellow)
-
-print(os.path.abspath(__file__))
 
 canvas.pack()
 
