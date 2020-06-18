@@ -1,6 +1,6 @@
 import save as save
 from tkinter import * 
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
 from PIL import Image, ImageTk
 from random import *
 import os
@@ -294,8 +294,40 @@ def saveManager():
     else:
         answer = messagebox.askyesno("Question","Souhaitez-vous charger une partie ?")
         if answer == True:
-            print("Load game ...")
+            fileFrame = filedialog.askopenfilename(initialdir="/", title="Sélectionnez votre sauvegarde", filetypes=(("Fichier JSON","*.json"),("Tous les fichiers","*.*")))
+            if len(fileFrame) > 0: readyAndApplySave(fileFrame)
 
+    
+def readyAndApplySave(link):
+    global findCode, line, selectorY
+    
+    if save.loadSave(link) == True:
+        
+        findCode = str(save.data_secret)
+        line = 1
+        selectorY = 655
+        #selectorY = int(save.data_selector)-62
+        
+        for i in range(int(save.data_focus)-1):
+            if line == 1: setLinePegs(save.data_pegs1)
+            elif line == 2: setLinePegs(save.data_pegs2)
+            elif line == 3: setLinePegs(save.data_pegs3)
+            elif line == 4: setLinePegs(save.data_pegs4)
+            elif line == 5: setLinePegs(save.data_pegs5)
+            elif line == 6: setLinePegs(save.data_pegs6)
+            elif line == 7: setLinePegs(save.data_pegs7)
+            elif line == 8: setLinePegs(save.data_pegs8)
+            elif line == 9: setLinePegs(save.data_pegs9)
+            elif line == 10: setLinePegs(save.data_pegs10)
+            
+            moveUpSelector()
+        
+        #line += 1
+        
+        print("Save ready to play !")
+    else:
+        print("Invalid save file !")
+        
     
 frame = Tk()
 frame.resizable(width=False, height=False)
@@ -353,7 +385,6 @@ btnRed = canvas.create_window(391, 353, window=btnRed)
 btnYellow = Button(frame, background='white', image=colorYellowImg, border=0, cursor="hand2", command= lambda x=6:setPawn(x))
 btnYellow = canvas.create_window(391, 415, window=btnYellow)
 
-save.loadSave()
 
 canvas.pack()
 frame.mainloop()
