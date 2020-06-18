@@ -1,3 +1,4 @@
+import save as save
 from tkinter import * 
 from tkinter import messagebox
 from PIL import Image, ImageTk
@@ -286,6 +287,15 @@ def switchTabs():
     elif line == 9: lineTab = line9
     elif line == 10: lineTab = line10
     
+def saveManager():
+    answer = messagebox.askyesno("Question","Souhaitez-vous sauvegarder cette partie ?")
+    if answer == True:
+        print("Save game ...")
+    else:
+        answer = messagebox.askyesno("Question","Souhaitez-vous charger une partie ?")
+        if answer == True:
+            print("Load game ...")
+
     
 frame = Tk()
 frame.resizable(width=False, height=False)
@@ -322,7 +332,7 @@ btnValid = canvas.create_window(391, 514, window=btnValid)
 btnCancel = Button(frame, background='white', image=btnCancelImg, border=0, cursor="hand2", command = clearLine)
 btnCancel = canvas.create_window(391, 600, window=btnCancel)
 
-btnSave = Button(frame, background='white', image=btnSaveImg, border=0, cursor="hand2")
+btnSave = Button(frame, background='white', image=btnSaveImg, border=0, cursor="hand2", command = saveManager)
 btnSave = canvas.create_window(391, 660, window=btnSave)
 
 btnBlue = Button(frame, background='white', image=colorBlueImg, border=0, cursor="hand2", command= lambda x=1:setPawn(x))
@@ -343,6 +353,7 @@ btnRed = canvas.create_window(391, 353, window=btnRed)
 btnYellow = Button(frame, background='white', image=colorYellowImg, border=0, cursor="hand2", command= lambda x=6:setPawn(x))
 btnYellow = canvas.create_window(391, 415, window=btnYellow)
 
-canvas.pack()
+save.loadSave()
 
+canvas.pack()
 frame.mainloop()
