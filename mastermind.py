@@ -12,6 +12,8 @@ line = 1
 position = 1
 selectorY = 655
 
+backupPart = False
+
 line1 = [0, 0, 0, 0]
 line2 = [0, 0, 0, 0]
 line3 = [0, 0, 0, 0]
@@ -34,6 +36,8 @@ def randomFindCode():
     for i in range(4):
         findCode += str(randint(1, 4))
         
+    print(findCode)
+        
 randomFindCode()
 
 
@@ -43,6 +47,7 @@ class Pawn:
         self.line = line
         self.position = position
         self.color = color
+        self.label = label
         
         if color == 1: self.label = Label(frame, image=colorBlueImg, border=0)
         elif color == 2: self.label = Label(frame, image=colorGreenImg, border=0)
@@ -188,7 +193,11 @@ def checkLine():
         if result == "2222":
             setResultFindColor(0)
             
-            answer = messagebox.askyesno("Question","Vous remportez la partie !\nSouhaitez-vous recommencer une nouvelle partie ?")
+            if backupPart == False:
+                 answer = messagebox.askyesno("Question","Vous remportez la partie !\nVotre partie à été référencé sur le site https://mastermind.fr-fr.cc/ \nSouhaitez-vous recommencer une nouvelle partie ?")
+            else: 
+                answer = messagebox.askyesno("Question","Vous remportez la partie !\nSouhaitez-vous recommencer une nouvelle partie ?")
+            
             if answer == True:
                 restartGame()
             else:
@@ -209,11 +218,7 @@ def checkLine():
         
         
 def restartGame():
-    global line 
-    global position
-    global selectorY
-    global lineTab
-    global pegsSave
+    global line, position, selectorY, lineTab, pegsSave, backupPart
     
     randomFindCode()
     line = 0
@@ -222,15 +227,15 @@ def restartGame():
     
     for i in range(10):
         if i == 0: lineTab = line1
-        elif i == 1: lineTab = line1
-        elif i == 2: lineTab = line2
-        elif i == 3: lineTab = line3
-        elif i == 4: lineTab = line4
-        elif i == 5: lineTab = line5
-        elif i == 6: lineTab = line6
-        elif i == 7: lineTab = line7
-        elif i == 8: lineTab = line8
-        elif i == 9: lineTab = line9
+        elif i == 1: lineTab = line2
+        elif i == 2: lineTab = line3
+        elif i == 3: lineTab = line4
+        elif i == 4: lineTab = line5
+        elif i == 5: lineTab = line6
+        elif i == 6: lineTab = line7
+        elif i == 7: lineTab = line8
+        elif i == 8: lineTab = line9
+        elif i == 9: lineTab = line10
         
         for i in range(len(lineTab)):
             if lineTab[i] != 0: lineTab[i].destroy()
@@ -241,17 +246,18 @@ def restartGame():
         if pegsSave[i] != 0: pegsSave[i].pegsDestroy()
         
     for i in range(4):
-        lineResult[i].destroy()
+        if lineResult[i] != 0: lineResult[i].destroy()
     
     setResultFindColor(1)
-    
     moveUpSelector()
+    backupPart = False
+
     
         
 def setLinePegs(pegsCode):
     global pegsSave
     
-    pegsSave[line] = Pegs(line, pegsCode, 0, 0, 0, 0)
+    pegsSave[line-1] = Pegs(line, pegsCode, 0, 0, 0, 0)
     
 
 def setResultFindColor(action):   
@@ -295,20 +301,37 @@ def saveManager():
         answer = messagebox.askyesno("Question","Souhaitez-vous charger une partie ?")
         if answer == True:
             fileFrame = filedialog.askopenfilename(initialdir="/", title="Sélectionnez votre sauvegarde", filetypes=(("Fichier JSON","*.json"),("Tous les fichiers","*.*")))
-            if len(fileFrame) > 0: readyAndApplySave(fileFrame)
+            if len(fileFrame) > 0: 
+                restartGame()
+                readyAndApplySave(fileFrame)
 
     
 def readyAndApplySave(link):
-    global findCode, line, selectorY
+    global findCode, line, selectorY, position, backupPart
     
     if save.loadSave(link) == True:
         
         findCode = str(save.data_secret)
         line = 1
         selectorY = 655
-        #selectorY = int(save.data_selector)-62
         
         for i in range(int(save.data_focus)-1):
+            for j in range(4):
+                if line == 1: varConvert = "" + str(save.data_line1)
+                elif line == 2: varConvert = "" + str(save.data_line2)
+                elif line == 3: varConvert = "" + str(save.data_line3)
+                elif line == 4: varConvert = "" + str(save.data_line4)
+                elif line == 5: varConvert = "" + str(save.data_line5)
+                elif line == 6: varConvert = "" + str(save.data_line6)
+                elif line == 7: varConvert = "" + str(save.data_line7)
+                elif line == 8: varConvert = "" + str(save.data_line8)
+                elif line == 9: varConvert = "" + str(save.data_line9)
+                elif line == 10: varConvert = "" + str(save.data_line10)
+                
+                setPawn(int(varConvert[j]))
+                
+            position = 1
+            
             if line == 1: setLinePegs(save.data_pegs1)
             elif line == 2: setLinePegs(save.data_pegs2)
             elif line == 3: setLinePegs(save.data_pegs3)
@@ -321,9 +344,8 @@ def readyAndApplySave(link):
             elif line == 10: setLinePegs(save.data_pegs10)
             
             moveUpSelector()
-        
-        #line += 1
-        
+    
+        backupPart = True
         print("Save ready to play !")
     else:
         print("Invalid save file !")
@@ -384,7 +406,6 @@ btnRed = canvas.create_window(391, 353, window=btnRed)
 
 btnYellow = Button(frame, background='white', image=colorYellowImg, border=0, cursor="hand2", command= lambda x=6:setPawn(x))
 btnYellow = canvas.create_window(391, 415, window=btnYellow)
-
 
 canvas.pack()
 frame.mainloop()
