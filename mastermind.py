@@ -196,7 +196,7 @@ def checkLine():
             if backupPart == False:
                  answer = messagebox.askyesno("Question","Vous remportez la partie !\nVotre partie à été référencé sur le site https://mastermind.fr-fr.cc/ \nSouhaitez-vous recommencer une nouvelle partie ?")
             else: 
-                answer = messagebox.askyesno("Question","Vous remportez la partie !\nSouhaitez-vous recommencer une nouvelle partie ?")
+                answer = messagebox.askyesno("Question","Vous remportez la partie !\nVotre partie n'a pas été référencé car elle provient d'une sauvegarde\nSouhaitez-vous recommencer une nouvelle partie ?")
             
             if answer == True:
                 restartGame()
@@ -300,20 +300,22 @@ def saveManager():
     else:
         answer = messagebox.askyesno("Question","Souhaitez-vous charger une partie ?")
         if answer == True:
-            fileFrame = filedialog.askopenfilename(initialdir="/", title="Sélectionnez votre sauvegarde", filetypes=(("Fichier JSON","*.json"),("Tous les fichiers","*.*")))
+            # Cahnger le lien du répertoir par défaut
+            fileFrame = filedialog.askopenfilename(initialdir="C:/Users/tangu/OneDrive/Documents/OneDrive - SUPINFO/Cours - Asc1/1PYTH/projet", title="Sélectionnez votre sauvegarde", filetypes=(("Fichier JSON","*.json"),("Tous les fichiers","*.*")))
             if len(fileFrame) > 0: 
                 restartGame()
-                readyAndApplySave(fileFrame)
+                readAndApplySave(fileFrame)
 
     
-def readyAndApplySave(link):
-    global findCode, line, selectorY, position, backupPart
+def readAndApplySave(link):
+    global findCode, line, selectorY, position, backupPart, lineTab
     
     if save.loadSave(link) == True:
         
         findCode = str(save.data_secret)
         line = 1
         selectorY = 655
+        lineTab = line1
         
         for i in range(int(save.data_focus)-1):
             for j in range(4):
@@ -344,7 +346,8 @@ def readyAndApplySave(link):
             elif line == 10: setLinePegs(save.data_pegs10)
             
             moveUpSelector()
-    
+            switchTabs()
+        
         backupPart = True
         print("Save ready to play !")
     else:
