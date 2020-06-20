@@ -164,7 +164,50 @@ def setPawn(color):
         position+=1
         
 def getLineColorCode(line):
-    return "0"
+    tempColor = "0"
+    for i in range(4):
+        if line == 1 and line1[0] != 0: 
+            if tempColor == "0": tempColor = ""
+            tempColor += str(line1[i].getColor())
+            save.data_line1 = tempColor
+        if line == 2 and line2[0] != 0: 
+            if tempColor == "0": tempColor = ""
+            tempColor += str(line2[i].getColor())
+            save.data_line2 = tempColor
+        if line == 3 and line3[0] != 0: 
+            if tempColor == "0": tempColor = ""
+            tempColor += str(line3[i].getColor())
+            save.data_line3 = tempColor
+        if line == 4 and line4[0] != 0: 
+            if tempColor == "0": tempColor = ""
+            tempColor += str(line4[i].getColor())
+            save.data_line4 = tempColor
+        if line == 5 and line5[0] != 0: 
+            if tempColor == "0": tempColor = ""
+            tempColor += str(line5[i].getColor())
+            save.data_line5 = tempColor
+        if line == 6 and line6[0] != 0: 
+            if tempColor == "0": tempColor = ""
+            tempColor += str(line6[i].getColor())
+            save.data_line6 = tempColor
+        if line == 7 and line7[0] != 0: 
+            if tempColor == "0": tempColor = ""
+            tempColor += str(line7[i].getColor())
+            save.data_line7 = tempColor
+        if line == 8 and line8[0] != 0: 
+            if tempColor == "0": tempColor = ""
+            tempColor += str(line8[i].getColor())
+            save.data_line8 = tempColor
+        if line == 9 and line9[0] != 0: 
+            if tempColor == "0": tempColor = ""
+            tempColor += str(line9[i].getColor())
+            save.data_line9 = tempColor
+        if line == 10 and line10[0] != 0: 
+            if tempColor == "0": tempColor = ""
+            tempColor += str(line10[i].getColor())
+            save.data_line10 = tempColor
+            
+    return tempColor
         
 
 def checkLine():
@@ -301,8 +344,7 @@ def switchTabs():
 def saveManager():
     answer = messagebox.askyesno("Question","Souhaitez-vous sauvegarder cette partie ?")
     if answer == True:
-        # Cahnger le lien du répertoir par défaut
-        fileFrame = filedialog.asksaveasfile(mode='w', defaultextension=".json", initialdir="/Documents", filetypes=(("Fichier JSON","*.json"),("Fichier JSON","*.json"))) 
+        fileFrame = filedialog.asksaveasfile(mode='w', defaultextension=".json", initialdir="/", filetypes=(("Fichier JSON","*.json"),("Fichier JSON","*.json"))) 
         if fileFrame is None:
             print("Annulation de la sauvegarde ...")
         else:
@@ -310,8 +352,7 @@ def saveManager():
     else:
         answer = messagebox.askyesno("Question","Souhaitez-vous charger une partie ?")
         if answer == True:
-            # Cahnger le lien du répertoir par défaut
-            fileFrame = filedialog.askopenfilename(initialdir="C:/Users/tangu/OneDrive/Documents/OneDrive - SUPINFO/Cours - Asc1/1PYTH/projet", title="Sélectionnez votre sauvegarde", filetypes=(("Fichier JSON","*.json"),("Tous les fichiers","*.*")))
+            fileFrame = filedialog.askopenfilename(initialdir="/", title="Sélectionnez votre sauvegarde", filetypes=(("Fichier JSON","*.json"),("Tous les fichiers","*.*")))
             if len(fileFrame) > 0: 
                 restartGame()
                 readAndApplySave(fileFrame)
@@ -346,6 +387,8 @@ def createAndApplySave(fileFrame):
     
     fileFrame.write(save.createSave())
     fileFrame.close()
+    
+    messagebox.showinfo(title="Partie sauvegardée", message="Votre partie a bien été sauvegardée !")
     
 def readAndApplySave(link):
     global findCode, line, selectorY, position, backupPart, lineTab
