@@ -34,7 +34,7 @@ def randomFindCode():
     global findCode
     findCode = ""
     for i in range(4):
-        findCode += str(randint(1, 4))
+        findCode += str(randint(1, 6))
         
     print(findCode)
         
@@ -141,6 +141,9 @@ class Pegs:
         if self.label2 != 0: self.label2.destroy()
         if self.label3 != 0: self.label3.destroy()
         if self.label4 != 0: self.label4.destroy()
+        
+    def getPegsCode(self):
+        return self.pegsCode    
     
 
 def moveUpSelector():
@@ -159,6 +162,9 @@ def setPawn(color):
     if position < 5:
         lineTab[position-1] = Pawn(line, position, color, 0)
         position+=1
+        
+def getLineColorCode(line):
+    return "0"
         
 
 def checkLine():
@@ -187,7 +193,6 @@ def checkLine():
             count+=1
                 
         result = "".join(sorted(pegsCode))
-        #print(result)
         setLinePegs(result)
         
         if result == "2222":
@@ -296,7 +301,12 @@ def switchTabs():
 def saveManager():
     answer = messagebox.askyesno("Question","Souhaitez-vous sauvegarder cette partie ?")
     if answer == True:
-        print("Save game ...")
+        # Cahnger le lien du répertoir par défaut
+        fileFrame = filedialog.asksaveasfile(mode='w', defaultextension=".json", initialdir="/Documents", filetypes=(("Fichier JSON","*.json"),("Fichier JSON","*.json"))) 
+        if fileFrame is None:
+            print("Annulation de la sauvegarde ...")
+        else:
+            createAndApplySave(fileFrame)
     else:
         answer = messagebox.askyesno("Question","Souhaitez-vous charger une partie ?")
         if answer == True:
@@ -306,6 +316,36 @@ def saveManager():
                 restartGame()
                 readAndApplySave(fileFrame)
 
+def createAndApplySave(fileFrame):
+    save.data_secret = findCode
+    save.data_focus = line
+    save.data_selector = selectorY
+    
+    save.data_line1 = getLineColorCode(1)
+    save.data_line2 = getLineColorCode(2)
+    save.data_line3 = getLineColorCode(3)
+    save.data_line4 = getLineColorCode(4)
+    save.data_line5 = getLineColorCode(5)
+    save.data_line6 = getLineColorCode(6)
+    save.data_line7 = getLineColorCode(7)
+    save.data_line8 = getLineColorCode(8)
+    save.data_line9 = getLineColorCode(9)
+    save.data_line10 = getLineColorCode(10)
+    
+    for i in range(len(pegsSave)):
+        if i == 0 and pegsSave[i] != 0: save.data_pegs1 = pegsSave[i].getPegsCode()
+        elif i == 1 and pegsSave[i] != 0: save.data_pegs2 = pegsSave[i].getPegsCode()
+        elif i == 2 and pegsSave[i] != 0: save.data_pegs3 = pegsSave[i].getPegsCode()
+        elif i == 3 and pegsSave[i] != 0: save.data_pegs4 = pegsSave[i].getPegsCode()
+        elif i == 4 and pegsSave[i] != 0: save.data_pegs5 = pegsSave[i].getPegsCode()
+        elif i == 5 and pegsSave[i] != 0: save.data_pegs6 = pegsSave[i].getPegsCode()
+        elif i == 6 and pegsSave[i] != 0: save.data_pegs7 = pegsSave[i].getPegsCode()
+        elif i == 7 and pegsSave[i] != 0: save.data_pegs8 = pegsSave[i].getPegsCode()
+        elif i == 8 and pegsSave[i] != 0: save.data_pegs9 = pegsSave[i].getPegsCode()
+        elif i == 9 and pegsSave[i] != 0: save.data_pegs10 = pegsSave[i].getPegsCode()
+    
+    fileFrame.write(save.createSave())
+    fileFrame.close()
     
 def readAndApplySave(link):
     global findCode, line, selectorY, position, backupPart, lineTab

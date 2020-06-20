@@ -26,6 +26,36 @@ data_pegs8 = ""
 data_pegs9 = ""
 data_pegs10 = ""
 
+def createSave():
+    jsonData = {
+        "secret": data_secret,
+        "focus": data_focus,
+        "selector": data_selector,
+        "line1": int(data_line1),
+        "line2": int(data_line2),
+        "line3": int(data_line3),
+        "line4": int(data_line4),
+        "line5": int(data_line5),
+        "line6": int(data_line6),
+        "line7": int(data_line7),
+        "line8": int(data_line8),
+        "line9": int(data_line9),
+        "line10": int(data_line10),
+        "pegs1": data_pegs1,
+        "pegs2": data_pegs2,
+        "pegs3": data_pegs3,
+        "pegs4": data_pegs4,
+        "pegs5": data_pegs5,
+        "pegs6": data_pegs6,
+        "pegs7": data_pegs7,
+        "pegs8": data_pegs8,
+        "pegs9": data_pegs9,
+        "pegs10": data_pegs10
+    }
+    
+    # On converti notre dic en objet json puis on le return
+    return json.dumps(jsonData)
+
 def loadSave(link):
     global data_secret, data_focus, data_selector
     global data_line1, data_line2, data_line3, data_line4, data_line5, data_line6, data_line7, data_line8, data_line9, data_line10
