@@ -5,6 +5,14 @@ from PIL import Image, ImageTk
 from random import *
 import os
 import sys
+import socket
+import requests
+
+#################  API KEY  #################
+############## NE PAS MODIFIER ##############
+apiKey = "qo8512x7lqrdlg78216e"
+#############################################
+#############################################
     
 findCode = ""
     
@@ -36,6 +44,8 @@ def randomFindCode():
     findCode = ""
     for i in range(4):
         findCode += str(randint(1, 6))
+        
+    print(findCode)
         
 randomFindCode()
 
@@ -262,7 +272,16 @@ def checkLine():
             setResultFindColor(0)
             
             if backupPart == False:
-                 answer = messagebox.askyesno("Question","Vous remportez la partie !\nVotre partie à été référencé sur le site https://mastermind.fr-fr.cc/ \nSouhaitez-vous recommencer une nouvelle partie ?")
+                try:
+                    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                    sock.connect(("www.google.com", 80))
+                    
+                    requests.get("https://mastermind.fr-fr.cc/api/setRank.php?apikey='"+apiKey+"'&line="+str(int(line))+"&secret="+findCode+"")
+                    answer = messagebox.askyesno("Question","Vous remportez la partie !\nVotre partie à été référencé sur le site https://mastermind.fr-fr.cc/ \nSouhaitez-vous recommencer une nouvelle partie ?")
+                except:
+                    print("Aucune connexion a internet")
+                    answer = messagebox.askyesno("Question","Vous remportez la partie !\nVotre partie n'a pas été référencé car vous n'êtes pas connecté à Internet !\nSouhaitez-vous recommencer une nouvelle partie ?")
+                    
             else: 
                 answer = messagebox.askyesno("Question","Vous remportez la partie !\nVotre partie n'a pas été référencé car elle provient d'une sauvegarde\nSouhaitez-vous recommencer une nouvelle partie ?")
             
