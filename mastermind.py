@@ -25,8 +25,9 @@ line8 = [0, 0, 0, 0]
 line9 = [0, 0, 0, 0]
 line10 = [0, 0, 0, 0]
 lineResult = [0, 0, 0, 0]
-
 pegsSave = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+btnColorRegister = [0, 0, 0, 0, 0, 0]
 
 lineTab = line1
 
@@ -35,8 +36,6 @@ def randomFindCode():
     findCode = ""
     for i in range(4):
         findCode += str(randint(1, 6))
-        
-    print(findCode)
         
 randomFindCode()
 
@@ -159,6 +158,8 @@ def setPawn(color):
     global position
     global lineTab
     
+    btnColorRegister[color-1] = btnColorRegister[color-1]+1
+    
     if position < 5:
         lineTab[position-1] = Pawn(line, position, color, 0)
         position+=1
@@ -217,26 +218,45 @@ def checkLine():
     pegsCode = ""
     result = ""
     count = 0
+    #identicalColor = "-"
     
     if position == 5:
         position = 1
         
         for i in range(len(lineTab)):
             lineCode += str(lineTab[i].getColor())
-        
+                
+                
+        postBlack = 0
+        repeatLineColor = False
+     
         for index in lineCode:
             if findCode.count(index) == 0:
                 pegsCode += str(0)
-            else :
-                if str(findCode)[count] != index:
-                    pegsCode += str(1)
-                else:
+            else:
+                if str(findCode)[count] == index:
                     pegsCode += str(2)
-                
+                else:
+                    pegsCode += str(1)
+                    postBlack += 1
+
             count+=1
+         
+        repeatLineColor = False
+        for i in range(6):
+            if btnColorRegister[i] > 3:
+                repeatLineColor = True
+                break    
+            
                 
         result = "".join(sorted(pegsCode))
+        if repeatLineColor == True:
+            result = result.replace("1", "0", postBlack)
         setLinePegs(result)
+        
+        for i in range(6):
+            if btnColorRegister[i] != 0:
+                btnColorRegister[i] = 0
         
         if result == "2222":
             setResultFindColor(0)
@@ -320,6 +340,10 @@ def setResultFindColor(action):
         
 def clearLine():
     global position
+    
+    for i in range(6):
+        if btnColorRegister[i] != 0:
+            btnColorRegister[i] = 0
     
     for i in range(len(lineTab)):
         if lineTab[i] != 0: lineTab[i].destroy()
