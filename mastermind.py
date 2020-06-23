@@ -1,27 +1,32 @@
 import save as save
 from tkinter import * 
 from tkinter import messagebox, filedialog
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk # A installer avec PIP
 from random import *
 import os
 import sys
 import socket
-import requests
+import requests # A installer avec PIP
+import webbrowser
 
 #################  API KEY  #################
 ############## NE PAS MODIFIER ##############
-apiKey = "qo8512x7lqrdlg78216e"
+apiKey = "rk9634p38o3v5sro94yr"
 #############################################
 #############################################
-    
+  
+# Variable contanant la combinaison secrète    
 findCode = ""
     
+# Ligne et position du pion actuel    
 line = 1
 position = 1
 selectorY = 655
 
+# Partie issue ou non d'une sauvegarde
 backupPart = False
 
+# Initialisation des tableaux de données pour chaques lignes et pour les picos
 line1 = [0, 0, 0, 0]
 line2 = [0, 0, 0, 0]
 line3 = [0, 0, 0, 0]
@@ -35,21 +40,21 @@ line10 = [0, 0, 0, 0]
 lineResult = [0, 0, 0, 0]
 pegsSave = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
+# Stockage des pions ajouté pour chaque bouton (optionel mais toujours bien utile)
 btnColorRegister = [0, 0, 0, 0, 0, 0]
 
 lineTab = line1
 
+# fonction permettant de générer une combinaison secrète aléatoirement
 def randomFindCode():
     global findCode
     findCode = ""
     for i in range(4):
         findCode += str(randint(1, 6))
         
-    print(findCode)
-        
 randomFindCode()
 
-
+# Objet Pion
 class Pawn:
     
     def __init__(self, line, position, color, label):
@@ -80,6 +85,7 @@ class Pawn:
     def getColor(self):
         return self.color
     
+# Objet placement des pions après vérification du résultat    
 class ResultPawn:
         
     def __init__(self, posX, posY, color, label):
@@ -100,7 +106,7 @@ class ResultPawn:
     def destroy(self):
         self.label.destroy()
     
-    
+# Objet pegs        
 class Pegs:
     
     def __init__(self, line, pegsCode, label1, label2, label3, label4):
@@ -154,7 +160,7 @@ class Pegs:
     def getPegsCode(self):
         return self.pegsCode    
     
-
+# Fonction permettant de faire monter le curseur de ligne (curseur tout à gauche)
 def moveUpSelector():
     global selectorY
     global line
@@ -163,7 +169,7 @@ def moveUpSelector():
         selectorY-=62
         line+=1
         
-        
+# Fonction permettant d'ajouter un pion sur le plateau        
 def setPawn(color):
     global position
     global lineTab
@@ -173,7 +179,8 @@ def setPawn(color):
     if position < 5:
         lineTab[position-1] = Pawn(line, position, color, 0)
         position+=1
-        
+       
+# Fonction permettant de récupérer le code couleur pour une ligne donnée    
 def getLineColorCode(line):
     tempColor = "0"
     for i in range(4):
@@ -220,7 +227,7 @@ def getLineColorCode(line):
             
     return tempColor
         
-
+# Fonction comparant la ligne validée avec la combinaison secrète + détecteur de victoire / défaite + référencement de la partie en ligne
 def checkLine():
     global position
     
@@ -240,6 +247,7 @@ def checkLine():
         postBlack = 0
         repeatLineColor = False
      
+        # Comparaison et vérification entre la ligne et la combinaison secrète
         for index in lineCode:
             if findCode.count(index) == 0:
                 pegsCode += str(0)
@@ -273,11 +281,13 @@ def checkLine():
             
             if backupPart == False:
                 try:
+                    # Vérification de la connexion à internet
                     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                     sock.connect(("www.google.com", 80))
                     
+                    # Enregistrement de la partie en ligne 
                     requests.get("https://mastermind.fr-fr.cc/api/setRank.php?apikey='"+apiKey+"'&line="+str(int(line))+"&secret="+findCode+"")
-                    answer = messagebox.askyesno("Question","Vous remportez la partie !\nVotre partie à été référencé sur le site https://mastermind.fr-fr.cc/ \nSouhaitez-vous recommencer une nouvelle partie ?")
+                    answer = messagebox.askyesno("Question","Vous remportez la partie !\nVotre partie à été référencé sur le site MasterMind-Rank \nSouhaitez-vous recommencer une nouvelle partie ?")
                 except:
                     print("Aucune connexion a internet")
                     answer = messagebox.askyesno("Question","Vous remportez la partie !\nVotre partie n'a pas été référencé car vous n'êtes pas connecté à Internet !\nSouhaitez-vous recommencer une nouvelle partie ?")
@@ -303,7 +313,7 @@ def checkLine():
                     sys.exit()
         
         
-        
+ # Fonction permettant de relancer une nouvelle partie       
 def restartGame():
     global line, position, selectorY, lineTab, pegsSave, backupPart
     
@@ -340,13 +350,13 @@ def restartGame():
     backupPart = False
 
     
-        
+# Fonction permettant d'ajouter les picos à la dernière ligne validée        
 def setLinePegs(pegsCode):
     global pegsSave
     
     pegsSave[line-1] = Pegs(line, pegsCode, 0, 0, 0, 0)
     
-
+# Fonction permettant d'afficher la combinaison secrète en cas de victoire ou de défaite
 def setResultFindColor(action):   
     if action == 0:
         count = 0
@@ -356,7 +366,7 @@ def setResultFindColor(action):
             
             count +=1
         
-        
+# Fonction permettant de supprimer une ligne (bouton rouge)        
 def clearLine():
     global position
     
@@ -369,7 +379,7 @@ def clearLine():
         
     position = 1
     
-    
+# Fonction permettant de changer le tableau de stockage de la ligne courante    
 def switchTabs():
     global lineTab
     
@@ -383,7 +393,8 @@ def switchTabs():
     elif line == 8: lineTab = line8
     elif line == 9: lineTab = line9
     elif line == 10: lineTab = line10
-    
+
+# Fonction permettant de proposer de sauvegarder ou de reprendre une partie
 def saveManager():
     answer = messagebox.askyesno("Question","Souhaitez-vous sauvegarder cette partie ?")
     if answer == True:
@@ -400,6 +411,7 @@ def saveManager():
                 restartGame()
                 readAndApplySave(fileFrame)
 
+# Fonction permettant de créer et d'enregistrer une sauvegarde
 def createAndApplySave(fileFrame):
     save.data_secret = findCode
     save.data_focus = line
@@ -432,7 +444,8 @@ def createAndApplySave(fileFrame):
     fileFrame.close()
     
     messagebox.showinfo(title="Partie sauvegardée", message="Votre partie a bien été sauvegardée !")
-    
+
+# Fonction permettant de lire et d'appliquer une sauvegarde    
 def readAndApplySave(link):
     global findCode, line, selectorY, position, backupPart, lineTab
     
@@ -478,12 +491,17 @@ def readAndApplySave(link):
         print("Save ready to play !")
     else:
         print("Invalid save file !")
-        
+      
+# Fonction permettant d'ouvrir le site de classement sur le navigateur par defaut        
+def openRankPage():
+    webbrowser.open('https://mastermind.fr-fr.cc/')
     
+# Création et paramètrage de la fenêtre    
 frame = Tk()
 frame.resizable(width=False, height=False)
 frame.title("MasterMind v1.2.5 | 1PYTH")
 
+# Création du canvas
 canvas = Canvas(frame, width=422, height=788, background="white")
 
 imgBG = PhotoImage(file = os.path.dirname( __file__ )+"/imgs/plate.png") 
@@ -494,10 +512,11 @@ imgSelector = PhotoImage(file = os.path.dirname( __file__ )+"/imgs/line_selector
 label = Label(frame, image=imgSelector, border=0)
 label.place(x=15, y=selectorY)
 
-
+# On définie toutes les images utiles au jeu
 btnValidImg = PhotoImage(file = os.path.dirname( __file__ )+"/imgs/valid_btn.png")
 btnCancelImg = PhotoImage(file = os.path.dirname( __file__ )+"/imgs/cancel_btn.png")
 btnSaveImg = PhotoImage(file = os.path.dirname( __file__ )+"/imgs/save_btn.png")
+btnRankImg = PhotoImage(file = os.path.dirname( __file__ )+"/imgs/rank.png")
 
 colorBlueImg = PhotoImage(file = os.path.dirname( __file__ )+"/imgs/blue_color.png") 
 colorGreenImg = PhotoImage(file = os.path.dirname( __file__ )+"/imgs/green_color.png") 
@@ -506,6 +525,7 @@ colorPinkImg = PhotoImage(file = os.path.dirname( __file__ )+"/imgs/pink_color.p
 colorRedImg = PhotoImage(file = os.path.dirname( __file__ )+"/imgs/red_color.png") 
 colorYellowImg = PhotoImage(file = os.path.dirname( __file__ )+"/imgs/yellow_color.png") 
 
+# Et on créer tous nos boutons
 colorPegsBlack = PhotoImage(file = os.path.dirname( __file__ )+"/imgs/pegs_black.png") 
 colorPegsGreen = PhotoImage(file = os.path.dirname( __file__ )+"/imgs/pegs_green.png") 
 
@@ -517,6 +537,9 @@ btnCancel = canvas.create_window(391, 600, window=btnCancel)
 
 btnSave = Button(frame, background='white', image=btnSaveImg, border=0, cursor="hand2", command = saveManager)
 btnSave = canvas.create_window(391, 660, window=btnSave)
+
+btnRank = Button(frame, background='white', image=btnRankImg, border=0, cursor="hand2", command = openRankPage)
+btnRank = canvas.create_window(391, 40, window=btnRank)
 
 btnBlue = Button(frame, background='white', image=colorBlueImg, border=0, cursor="hand2", command= lambda x=1:setPawn(x))
 btnBlue = canvas.create_window(391, 105, window=btnBlue)
@@ -538,3 +561,8 @@ btnYellow = canvas.create_window(391, 415, window=btnYellow)
 
 canvas.pack()
 frame.mainloop()
+
+
+#
+# Ceci est un commentaire jugé inutile par la FFCP (Fédération Française des Commentaires en Python)
+#

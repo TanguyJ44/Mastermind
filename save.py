@@ -1,5 +1,6 @@
 import json
 
+# Initialisation des variables de sauvegarde
 data_secret = ""
 data_focus = ""
 data_selector = ""
@@ -26,6 +27,7 @@ data_pegs8 = ""
 data_pegs9 = ""
 data_pegs10 = ""
 
+# fonction de remplissage du template de la sauvegarde avec les valeurs courantes du jeu
 def createSave():
     jsonData = {
         "secret": data_secret,
@@ -56,6 +58,7 @@ def createSave():
     # On converti notre dic en objet json puis on le return
     return json.dumps(jsonData)
 
+# Fonction de lecture du fichier de sauvegarde et de remplissage des variables pour les attribuer au jeu
 def loadSave(link):
     global data_secret, data_focus, data_selector
     global data_line1, data_line2, data_line3, data_line4, data_line5, data_line6, data_line7, data_line8, data_line9, data_line10
